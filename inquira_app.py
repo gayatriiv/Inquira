@@ -38,6 +38,7 @@ create_db()
 
 # Global variables
 current_user_id = None
+profile_exists = False
 
 # Function to register a new user
 def register_user():
@@ -92,7 +93,7 @@ def login_user():
             current_user_id = user[0]
             messagebox.showinfo("Success", "Login successful!")
             login_window.destroy()
-            show_main_window()
+            show_dashboard()
         else:
             messagebox.showerror("Error", "Invalid credentials")
 
@@ -130,7 +131,7 @@ def create_profile():
         profile_window.destroy()
 
     profile_window = tk.Toplevel(root)
-    profile_window.title("Create Profile")
+    profile_window.title("Create / Update Profile")
 
     tk.Label(profile_window, text="Bio").grid(row=0, column=0)
     tk.Label(profile_window, text="Skills").grid(row=1, column=0)
@@ -212,14 +213,14 @@ def search_profiles():
 
         conn = sqlite3.connect('devv.db')  # Changed to devv.db
         c = conn.cursor()
-        c.execute("SELECT username, skills, experience, location, projects FROM users WHERE skills LIKE ? AND experience LIKE ? AND location LIKE ? AND projects LIKE ?", 
+        c.execute("SELECT username, email, skills, experience, location, projects FROM users WHERE skills LIKE ? AND experience LIKE ? AND location LIKE ? AND projects LIKE ?", 
                   (f'%{skills}%', f'%{experience}%', f'%{location}%', f'%{projects}%'))
         results = c.fetchall()
         conn.close()
 
         result_text.delete(1.0, tk.END)
         for result in results:
-            result_text.insert(tk.END, f"Username: {result[0]}, Skills: {result[1]}, Experience: {result[2]}, Location: {result[3]}, Projects: {result[4]}\n")
+            result_text.insert(tk.END, f"Username: {result[0]}, Email: {result[1]}, Skills: {result[2]}, Experience: {result[3]}, Location: {result[4]}, Projects: {result[5]}\n")
 
     tk.Label(search_window, text="Search by Skills").grid(row=0, column=0)
     tk.Label(search_window, text="Search by Experience").grid(row=1, column=0)
@@ -241,39 +242,41 @@ def search_profiles():
     result_text = tk.Text(search_window, height=10, width=50)
     result_text.grid(row=5, column=0, columnspan=2)
 
-# Function to show the main window after logging in
-def show_main_window():
-    for widget in root.winfo_children():
-        widget.destroy()
+# Function to show dashboard options after login
+def show_dashboard():
+    dashboard_window = tk.Toplevel(root)
+    dashboard_window.title("Dashboard")
 
-    tk.Label(root, text="Welcome to INQUIRA", font=("Arial", 16)).pack(pady=20)
+    tk.Label(dashboard_window, text="Dashboard", font=("Arial", 24)).pack(pady=20)
 
-    tk.Button(root, text="Create Profile", command=create_profile).pack(pady=10)
-    tk.Button(root, text="Search for Developers", command=search_profiles).pack(pady=10)
-    tk.Button(root, text="View Connections", command=view_connections).pack(pady=10)
-    tk.Button(root, text="Send Connection Request", command=send_connection).pack(pady=10)
+    tk.Button(dashboard_window, text="Create / Update Profile", command=create_profile).pack(pady=10)
+    tk.Button(dashboard_window, text="Search for Developers", command=search_profiles).pack(pady=10)
+    tk.Button(dashboard_window, text="Send Connection Requests", command=send_connection).pack(pady=10)
+    tk.Button(dashboard_window, text="View Connection Requests", command=view_connections).pack(pady=10)
+    
+    # Add logout option
+    tk.Button(dashboard_window, text="Logout", command=logout).pack(pady=10)
 
-    # Logout Button
-    tk.Button(root, text="Logout", command=logout).pack(pady=10)
-
-# Logout functionality
+# Function to handle logout
 def logout():
-    global current_user_id
+    global current_user_id, profile_exists
     current_user_id = None
-    messagebox.showinfo("Logout", "You have been logged out.")
-    show_login_screen()
+    profile_exists = False
+    messagebox.showinfo("Success", "You have logged out!")
+    home_page()  # Go back to the home page
 
-# Show login screen initially
-def show_login_screen():
+# Home page UI
+def home_page():
     for widget in root.winfo_children():
         widget.destroy()
 
-    tk.Label(root, text="INQUIRA - Login", font=("Arial", 16)).pack(pady=20)
-    tk.Button(root, text="Login", command=login_user).pack(pady=10)
+    tk.Label(root, text="INQUIRA", font=("Arial", 30)).pack(pady=50)
+    tk.Label(root, text="discover . connect . develop", font=("Arial", 14)).pack(pady=10)
+    
     tk.Button(root, text="Register", command=register_user).pack(pady=10)
+    tk.Button(root, text="Login", command=login_user).pack(pady=10)
 
-# Start with login screen
-show_login_screen()
+home_page()
 
-# Start the Tkinter main loop
+# Run the main loop
 root.mainloop()
