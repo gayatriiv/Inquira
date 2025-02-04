@@ -10,7 +10,7 @@
 - **Theme Toggle**: Option to switch between light and dark themes for a comfortable user experience.
 
 ## Technologies
-- **Frontend**: Advanced web development (React.js recommended)
+- **Frontend**: Advanced web development 
 - **Backend**: Python
 - **Database**: SQLite for local development, scalable to other relational databases
 
