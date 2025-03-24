@@ -27,7 +27,7 @@
 
 1. **Clone the Repository**:
    ```bash
-   git clone https://github.com/username/INQUIRA.git
+   git clone https://github.com/gayatriiv/INQUIRA.git
    ```
 2. **Database Setup**:
    - Set up the SQLite database using the provided schema file.
